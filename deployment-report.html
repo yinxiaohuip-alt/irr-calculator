@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>部署报告 - 信用成长手册</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f4f8;
+    color: #1e293b;
+    line-height: 1.6;
+    padding: 24px 16px;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .header {
+    text-align: center;
+    padding: 32px 24px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-radius: 16px;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 22px; margin-bottom: 8px; }
+  .header p { font-size: 14px; opacity: 0.9; }
+  .section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .url-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .url-item .tag {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #eef2ff;
+    color: #4f46e5;
+  }
+  .url-item .tag.green { background: #ecfdf5; color: #059669; }
+  .url-item .url {
+    flex: 1;
+    font-size: 13px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    color: #4f46e5;
+    word-break: break-all;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: #4f46e5;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .step-num.done { background: #10b981; }
+  .step-content { flex: 1; }
+  .step-content .title { font-weight: 600; font-size: 14px; }
+  .step-content .desc { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .status-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .status-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .status-tag.done { background: #ecfdf5; color: #059669; }
+  .status-tag.pending { background: #fef3c7; color: #d97706; }
+  .status-tag.todo { background: #f1f5f9; color: #64748b; }
+  .btn {
+    display: inline-block;
+    background: #4f46e5;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 4px;
+    text-align: center;
+  }
+  .btn:hover { background: #4338ca; }
+  .btn.secondary { background: #e2e8f0; color: #475569; }
+  .btn.secondary:hover { background: #cbd5e1; }
+  .btn-group { text-align: center; margin: 16px 0; }
+  .note {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+  }
+  .footer-info {
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+    padding: 16px 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>🚀 项目部署完成报告</h1>
+  <p>信用成长手册 · IRR 借款成本核算器 · 2026年8月1日</p>
+</div>
+
+<!-- 最终URL -->
+<div class="section">
+  <div class="section-title">🔗 最终部署 URL</div>
+  <div class="url-item">
+    <span class="tag green">主站</span>
+    <span class="url">https://yinxiaohuip-alt.github.io/irr-calculator/</span>
+  </div>
+  <div class="url-item">
+    <span class="tag green">分享页</span>
+    <span class="url">https://yinxiaohuip-alt.github.io/irr-calculator/share.html</span>
+  </div>
+  <div class="url-item">
+    <span class="tag green">扫码页</span>
+    <span class="url">https://yinxiaohuip-alt.github.io/irr-calculator/qr.html</span>
+  </div>
+  <div class="url-item">
+    <span class="tag">可靠性报告</span>
+    <span class="url">https://yinxiaohuip-alt.github.io/irr-calculator/reliability-report.html</span>
+  </div>
+  <div class="btn-group">
+    <a class="btn" href="https://yinxiaohuip-alt.github.io/irr-calculator/" target="_blank">打开计算器</a>
+    <a class="btn secondary" href="https://yinxiaohuip-alt.github.io/irr-calculator/share.html" target="_blank">分享页</a>
+  </div>
+</div>
+
+<!-- 部署状态 -->
+<div class="section">
+  <div class="section-title">📋 部署状态</div>
+  
+  <div class="step">
+    <div class="step-num done">✓</div>
+    <div class="step-content">
+      <div class="title">IRR 计算器部署</div>
+      <div class="desc">GitHub Pages 全球CDN，无 Content-Disposition 下载头，微信/UC/手机浏览器均正常打开</div>
+      <div class="status-bar"><span class="status-tag done">已完成</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num done">✓</div>
+    <div class="step-content">
+      <div class="title">分享页 & 扫码页</div>
+      <div class="desc">分享页已更新所有链接为 GitHub Pages URL，支持微信分享、朋友圈文案、二维码扫码</div>
+      <div class="status-bar"><span class="status-tag done">已完成</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num done">✓</div>
+    <div class="step-content">
+      <div class="title">所有文件链接更新</div>
+      <div class="desc">IRR 计算器、分享页、可靠性报告、品牌版、公众号文章、分发文案中的链接全部更新</div>
+      <div class="status-bar"><span class="status-tag done">已完成</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <div class="title">注册公众号</div>
+      <div class="desc">注册微信订阅号，配置菜单、自动回复、关键词回复</div>
+      <div class="status-bar"><span class="status-tag pending">待完成</span> <span class="status-tag todo">预计 30 分钟</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <div class="title">发布第一篇公众号文章</div>
+      <div class="desc">新规解读文章已准备好，详见 wechat-article.html</div>
+      <div class="status-bar"><span class="status-tag pending">待完成</span> <span class="status-tag todo">预计 15 分钟</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <div class="title">多平台分发引流</div>
+      <div class="desc">知乎、小红书、朋友圈、贴吧分发文案已准备好</div>
+      <div class="status-bar"><span class="status-tag pending">待完成</span> <span class="status-tag todo">预计 30 分钟</span></div>
+    </div>
+  </div>
+  
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-content">
+      <div class="title">太太注册个体户</div>
+      <div class="desc">通过粤省事线上注册，经营范围选「信息技术服务」类</div>
+      <div class="status-bar"><span class="status-tag pending">待完成</span> <span class="status-tag todo">预计 30 分钟</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 关键文件索引 -->
+<div class="section">
+  <div class="section-title">📁 关键文件索引</div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <tr style="background:#f8fafc;">
+      <th style="text-align:left;padding:8px 10px;border-bottom:1px solid #e2e8f0;">文件</th>
+      <th style="text-align:left;padding:8px 10px;border-bottom:1px solid #e2e8f0;">用途</th>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">irr-calculator.html</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">IRR 计算器主文件</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">share.html</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">分享页（含二维码+文案）</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">qr.html</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">扫码页（手机扫码打开）</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">deployment/wechat-article.html</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">公众号文章（可直接复制发布）</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">deployment/distribution-content.txt</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">多平台分发文案</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">deployment/irr-calculator-branded.html</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">品牌版计算器（含公众号引导）</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">wechat-setup-guide.md</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">公众号注册配置指南</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;font-family:monospace;">project-overview.md</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">项目全景概述（入口文档）</td>
+    </tr>
+  </table>
+</div>
+
+<!-- 技术要点 -->
+<div class="section">
+  <div class="section-title">⚡ 技术要点</div>
+  <div class="note">
+    <strong>部署平台：</strong>GitHub Pages（yinxiaohuip-alt/irr-calculator）
+  </div>
+  <div class="note">
+    <strong>优势：</strong>全球CDN分发 · 4个IP负载均衡 · 免费SSL · 无 Content-Disposition 强制下载头
+  </div>
+  <div class="note">
+    <strong>兼容性：</strong>微信内置浏览器 ✓ · UC浏览器 ✓ · 手机Chrome/Safari ✓ · 电脑浏览器 ✓
+  </div>
+  <div class="note">
+    <strong>废弃方案：</strong>腾讯云COS（2024政策强制下载）→ SCF函数式URL（同样强制下载）→ 最终使用GitHub Pages
+  </div>
+</div>
+
+<div class="footer-info">
+  信用成长手册 · 2026年8月1日 · 广州
+</div>
+
+</div>
+</body>
+</html>
