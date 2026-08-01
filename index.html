@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="借款成本核算器 - 一秒算出真实年化利率">
+<meta property="og:description" content="8月1日新规已实施！输入借款金额、期限、月供，立即算出你的真实年化利率，看是否超过法定上限。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://via.placeholder.com/1200x630/4f46e5/ffffff?text=借款成本核算器">
+<meta name="description" content="借款成本核算器 - 免费计算借款真实年化利率，8月1日新规已实施，超过法定上限的部分可依法主张减免。">
+<title>借款成本核算器 | 信用成长手册</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent-hover: #4338ca;
+    --success: #10b981;
+    --success-bg: #ecfdf5;
+    --warning: #f59e0b;
+    --warning-bg: #fffbeb;
+    --danger: #ef4444;
+    --danger-bg: #fef2f2;
+    --nav-bg: #0f172a;
+    --nav-text: #f8fafc;
+    --bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.05);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Navbar ===== */
+  .navbar {
+    background: var(--nav-bg);
+    color: var(--nav-text);
+    padding: 0 1rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .navbar .container {
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .navbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .navbar .brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .navbar .badge {
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .navbar .version {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+  }
+
+  /* ===== Trust Banner ===== */
+  .trust-banner {
+    text-align: center;
+    padding: 10px 16px;
+    background: #f0fdf4;
+    border-bottom: 1px solid #bbf7d0;
+    font-size: 0.8rem;
+    color: #15803d;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* ===== Main ===== */
+  .main {
+    flex: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 2rem;
+    width: 100%;
+  }
+
+  /* ===== Cards ===== */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    transition: opacity var(--transition), transform var(--transition);
+  }
+  .card.hidden {
+    display: none;
+  }
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-title .icon {
+    color: var(--accent);
+  }
+
+  /* ===== Form ===== */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+  }
+  .form-group .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .form-group .input-wrapper .suffix {
+    position: absolute;
+    right: 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+  .form-group input[type="number"],
+  .form-group input[type="text"] {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fafbfc;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .form-group input[type="number"]::-webkit-outer-spin-button,
+  .form-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    background: #fff;
+  }
+  .form-group input.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+  .form-group .error-msg {
+    font-size: 0.78rem;
+    color: var(--danger);
+    min-height: 1.2em;
+    transition: opacity var(--transition);
+  }
+  .form-group .error-msg:empty { opacity: 0; }
+
+  /* ===== Radio group ===== */
+  .radio-group {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 0.2rem;
+  }
+  .radio-group label {
+    position: relative;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
+    background: #fafbfc;
+  }
+  .radio-group input[type="radio"] {
+    display: none;
+  }
+  .radio-group label:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  /* ===== Button ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+    letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    width: 100%;
+    padding: 0.85rem;
+    font-size: 1.05rem;
+    border-radius: var(--radius);
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 0.5rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  .btn-outline:hover {
+    background: var(--accent-light);
+  }
+  .btn-success {
+    background: var(--success);
+    color: #fff;
+  }
+  .btn-success:hover {
+    background: #059669;
+  }
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .btn-row .btn { flex: 1; }
+
+  .submit-row {
+    margin-top: 0.5rem;
+  }
+
+  /* ===== Result ===== */
+  .result-enter {
+    animation: slideDown 0.4s ease-out;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-irr {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .result-irr .value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .result-irr .label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .irr-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .irr-badge.safe {
+    background: var(--success-bg);
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .irr-badge.warning {
+    background: var(--warning-bg);
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+  .irr-badge.danger {
+    background: var(--danger-bg);
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .result-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .summary-item {
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .summary-item .num {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .summary-item .lbl {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+  }
+  .summary-item.accent .num { color: var(--accent); }
+  .summary-item.accent .lbl { color: var(--accent); }
+
+  /* ===== Rate Comparison ===== */
+  .rate-comparison {
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .rate-comparison .rc-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+  .rc-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .rc-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .rc-row .rc-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    width: 5.5em;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .rc-row .rc-track {
+    flex: 1;
+    height: 18px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .rc-row .rc-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 6px;
+    min-width: 0;
+  }
+  .rc-row .rc-fill.nominal {
+    background: linear-gradient(90deg, #93c5fd, #60a5fa);
+  }
+  .rc-row .rc-fill.actual {
+    background: linear-gradient(90deg, var(--accent), #818cf8);
+  }
+  .rc-row .rc-value {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    width: 6em;
+    flex-shrink: 0;
+  }
+
+  /* ===== Legal Hint ===== */
+  .legal-hint {
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    border: 1px solid var(--border);
+  }
+  .legal-hint.safe {
+    background: var(--success-bg);
+    color: #065f46;
+    border-color: #a7f3d0;
+  }
+  .legal-hint.warning {
+    background: var(--warning-bg);
+    color: #92400e;
+    border-color: #fde68a;
+  }
+  .legal-hint.danger {
+    background: var(--danger-bg);
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+
+  /* ===== Table ===== */
+  .table-wrapper {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .table-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  table th {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.65rem 0.75rem;
+    text-align: right;
+    border-bottom: 2px solid var(--border);
+  }
+  table th:first-child { text-align: center; }
+  table td {
+    padding: 0.55rem 0.75rem;
+    text-align: right;
+    border-bottom: 1px solid #f1f5f9;
+    font-variant-numeric: tabular-nums;
+  }
+  table td:first-child { text-align: center; color: var(--text-secondary); }
+  table tr:last-child td { border-bottom: none; }
+  table tr:hover td { background: #f8fafc; }
+  table tr.total td {
+    font-weight: 700;
+    background: #f1f5f9;
+    border-top: 2px solid var(--border);
+  }
+
+  .schedule-toggle {
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+  .schedule-toggle button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition);
+  }
+  .schedule-toggle button:hover {
+    background: var(--accent-light);
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: all 0.35s ease;
+    z-index: 200;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===== Share CTA ===== */
+  .share-cta {
+    text-align: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-bottom: 1px solid #c7d2fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .share-cta .pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 0 6px rgba(79,70,229,0); }
+  }
+  .share-cta .btn-outline {
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
+    border-radius: 20px;
+  }
+
+  /* ===== QR Modal ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-content {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+  .modal-overlay.active .modal-content {
+    transform: scale(1);
+  }
+  .modal-content .modal-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .qr-placeholder {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 0.5rem;
+  }
+  .qr-placeholder .qr-icon {
+    font-size: 2.5rem;
+    opacity: 0.5;
+  }
+  .modal-content .modal-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+  .modal-content .btn-close-modal {
+    background: var(--border);
+    color: var(--text);
+    border: none;
+    padding: 0.55rem 2rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition);
+    font-family: inherit;
+  }
+  .modal-content .btn-close-modal:hover {
+    background: #cbd5e1;
+  }
+
+  /* ===== Scroll to Top ===== */
+  .scroll-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--nav-bg);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.15);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    z-index: 150;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    font-family: inherit;
+    line-height: 1;
+  }
+  .scroll-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .scroll-top:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* ===== Branding Bar ===== */
+  .branding-bar {
+    text-align: center;
+    padding: 14px 16px;
+    background: var(--nav-bg);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .branding-bar a {
+    color: #a5b4fc;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .branding-bar a:hover {
+    text-decoration: underline;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 640px) {
+    .navbar .brand { font-size: 0.95rem; }
+    .navbar .badge { display: none; }
+    .main { padding: 1rem 0.75rem 1.5rem; }
+    .card { padding: 1.1rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .result-irr .value { font-size: 1.8rem; }
+    .result-summary { grid-template-columns: 1fr; }
+    .rc-row .rc-label { width: 4.5em; font-size: 0.75rem; }
+    .rc-row .rc-value { width: 5em; font-size: 0.75rem; }
+    table { font-size: 0.78rem; }
+    table th, table td { padding: 0.5rem 0.5rem; }
+    .btn-row { flex-direction: column; }
+    .share-cta { flex-direction: column; gap: 0.5rem; padding: 10px 12px; }
+    .scroll-top { bottom: 1rem; right: 1rem; width: 40px; height: 40px; }
+  }
+
+  @media (min-width: 641px) and (max-width: 768px) {
+    .result-summary { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Navbar ===== -->
+<nav class="navbar">
+  <div class="container">
+    <div class="brand">
+      <span class="brand-icon">%</span>
+      <span>借款成本核算器</span>
+      <span class="badge">信用成长手册</span>
+    </div>
+    <span class="version">v1.0</span>
+  </div>
+</nav>
+
+<!-- ===== Trust Banner ===== -->
+<div class="trust-banner">
+  &#128274; 本工具采用IRR标准算法，所有数据仅在浏览器本地计算，不会上传任何信息
+</div>
+
+<!-- ===== Main ===== -->
+<main class="main">
+
+  <!-- ===== Input Card ===== -->
+  <div class="card" id="inputCard">
+    <div class="card-title">
+      <span class="icon">&#9881;</span>
+      输入参数
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="loanAmount">借款金额</label>
+        <div class="input-wrapper">
+          <input type="number" id="loanAmount" placeholder="例如 10000" min="0" step="0.01" autofocus>
+          <span class="suffix">元</span>
+        </div>
+        <div class="error-msg" id="errAmount"></div>
+      </div>
+      <div class="form-group">
+        <label for="loanTerm">借款期限</label>
+        <div class="input-wrapper">
+          <input type="number" id="loanTerm" placeholder="例如 12" min="1" step="1">
+          <span class="suffix">月</span>
+        </div>
+        <div class="error-msg" id="errTerm"></div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="monthlyPayment">每期还款金额</label>
+        <div class="input-wrapper">
+          <input type="number" id="monthlyPayment" placeholder="例如 1000" min="0" step="0.01">
+          <span class="suffix" id="paymentSuffix">元</span>
+        </div>
+        <div class="error-msg" id="errPayment"></div>
+      </div>
+      <div class="form-group">
+        <label>还款方式</label>
+        <div class="radio-group" id="methodGroup">
+          <label>
+            <input type="radio" name="method" value="equal" checked>
+            等额本息
+          </label>
+          <label>
+            <input type="radio" name="method" value="interest-first">
+            先息后本
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn btn-primary" id="calcBtn">开始核算</button>
+    </div>
+  </div>
+
+  <!-- ===== Result Card ===== -->
+  <div class="card hidden" id="resultCard">
+    <div class="card-title">
+      <span class="icon">&#9650;</span>
+      计算结果
+    </div>
+
+    <div class="result-header" id="resultHeader">
+      <div class="result-irr">
+        <span class="label">年化IRR</span>
+        <span class="value" id="irrValue">--</span>
+      </div>
+      <span class="irr-badge" id="irrBadge">--</span>
+    </div>
+
+    <div class="result-summary">
+      <div class="summary-item">
+        <div class="num" id="totalRepayment">--</div>
+        <div class="lbl">总还款金额</div>
+      </div>
+      <div class="summary-item">
+        <div class="num" id="totalInterest">--</div>
+        <div class="lbl">总利息</div>
+      </div>
+      <div class="summary-item accent">
+        <div class="num" id="interestRatio">--</div>
+        <div class="lbl">利息占比</div>
+      </div>
+    </div>
+
+    <!-- Rate Comparison -->
+    <div class="rate-comparison">
+      <div class="rc-title">名义利率 vs 实际IRR利率</div>
+      <div class="rc-bar">
+        <div class="rc-row">
+          <span class="rc-label">名义利率</span>
+          <div class="rc-track">
+            <div class="rc-fill nominal" id="nominalFill" style="width:0%"></div>
+          </div>
+          <span class="rc-value" id="nominalRate">--</span>
+        </div>
+        <div class="rc-row">
+          <span class="rc-label">实际IRR</span>
+          <div class="rc-track">
+            <div class="rc-fill actual" id="actualFill" style="width:0%"></div>
+          </div>
+          <span class="rc-value" id="actualRate">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal Hint -->
+    <div class="legal-hint" id="legalHint"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" id="copyBtn">&#128203; 复制结果</button>
+      <button class="btn btn-outline" id="shareWxBtn">&#128156; 分享到微信</button>
+      <button class="btn btn-outline" id="toggleScheduleBtn">&#128196; 查看还款明细</button>
+    </div>
+  </div>
+
+  <!-- ===== Schedule Card ===== -->
+  <div class="card hidden" id="scheduleCard">
+    <div class="card-title">
+      <span class="icon">&#9776;</span>
+      每月还款明细
+    </div>
+    <div class="table-wrapper" id="tableWrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>期数</th>
+            <th>还款金额</th>
+            <th>本金</th>
+            <th>利息</th>
+            <th>剩余本金</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== Share CTA ===== -->
+<div class="share-cta">
+  <span class="pulse-dot"></span>
+  <span>觉得有用？分享给需要的人</span>
+  <button class="btn btn-outline" id="sharePageBtn">分享页面</button>
+</div>
+
+<!-- ===== Branding Bar ===== -->
+<div class="branding-bar">
+  关注公众号：<a href="#">信用成长手册</a> &middot; 获取更多成本核算工具 &middot; <a href="https://credit-growth-manual-1459890570.cos.accelerate.myqcloud.com/irr-calculator.html?v=20260801b" style="color:#a5b4fc;text-decoration:none;">加速通道</a>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  计算结果仅供参考，不构成法律建议
+</footer>
+
+<!-- ===== QR Modal ===== -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-content">
+    <div class="modal-title">分享到微信</div>
+    <div class="qr-placeholder">
+      <span class="qr-icon">&#9632;&#9632;&#9632;&#9632;</span>
+      <span>请截图分享给好友</span>
+    </div>
+    <div class="modal-hint">打开微信扫一扫，或截图发送给好友</div>
+    <button class="btn-close-modal" id="closeModalBtn">关闭</button>
+  </div>
+</div>
+
+<!-- ===== Scroll to Top ===== -->
+<button class="scroll-top" id="scrollTopBtn" aria-label="回到顶部">&#8593;</button>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== 统计分析 ===== -->
+<!-- 部署后请在此处添加统计分析代码 -->
+<!-- 推荐：百度统计 https://tongji.baidu.com/ -->
+<!-- 代码示例：<script>...</script> -->
+
+<!-- ===== JavaScript ===== -->
+<script>
+(function() {
+  'use strict';
+
+  // --- DOM refs ---
+  const loanAmountEl = document.getElementById('loanAmount');
+  const loanTermEl   = document.getElementById('loanTerm');
+  const paymentEl    = document.getElementById('monthlyPayment');
+  const methodRadios = document.querySelectorAll('input[name="method"]');
+  const paymentSuffix = document.getElementById('paymentSuffix');
+  const calcBtn      = document.getElementById('calcBtn');
+  const resultCard   = document.getElementById('resultCard');
+  const scheduleCard = document.getElementById('scheduleCard');
+  const toggleSchedBtn = document.getElementById('toggleScheduleBtn');
+
+  const irrValueEl    = document.getElementById('irrValue');
+  const irrBadgeEl    = document.getElementById('irrBadge');
+  const legalHintEl   = document.getElementById('legalHint');
+  const totalRepayEl  = document.getElementById('totalRepayment');
+  const totalIntEl    = document.getElementById('totalInterest');
+  const intRatioEl    = document.getElementById('interestRatio');
+  const nominalRateEl = document.getElementById('nominalRate');
+  const actualRateEl  = document.getElementById('actualRate');
+  const nominalFillEl = document.getElementById('nominalFill');
+  const actualFillEl  = document.getElementById('actualFill');
+  const scheduleBody  = document.getElementById('scheduleBody');
+  const copyBtn       = document.getElementById('copyBtn');
+  const toastEl       = document.getElementById('toast');
+
+  const errAmount  = document.getElementById('errAmount');
+  const errTerm    = document.getElementById('errTerm');
+  const errPayment = document.getElementById('errPayment');
+
+  // --- Share / UX refs ---
+  const shareWxBtn    = document.getElementById('shareWxBtn');
+  const qrModal       = document.getElementById('qrModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const sharePageBtn  = document.getElementById('sharePageBtn');
+  const scrollTopBtn  = document.getElementById('scrollTopBtn');
+
+  // --- State ---
+  let lastResult = null;
+
+  // --- Payment suffix label update ---
+  function updatePaymentLabel() {
+    const method = document.querySelector('input[name="method"]:checked').value;
+    paymentSuffix.textContent = method === 'interest-first' ? '元（利息）' : '元';
+  }
+  methodRadios.forEach(r => r.addEventListener('change', updatePaymentLabel));
+  updatePaymentLabel();
+
+  // --- Auto-focus ---
+  loanAmountEl.focus();
+
+  // --- Input validation ---
+  function clearError(el) { el.textContent = ''; el.closest('.form-group')?.querySelector('input')?.classList.remove('error'); }
+  function setError(el, msg) { el.textContent = msg; el.closest('.form-group')?.querySelector('input')?.classList.add('error'); }
+
+  function validate() {
+    let valid = true;
+    const amount = parseFloat(loanAmountEl.value);
+    const term   = parseInt(loanTermEl.value, 10);
+    const payment = parseFloat(paymentEl.value);
+
+    clearError(errAmount);
+    clearError(errTerm);
+    clearError(errPayment);
+
+    if (!loanAmountEl.value || isNaN(amount) || amount <= 0) {
+      setError(errAmount, '请输入大于0的借款金额');
+      valid = false;
+    }
+    if (!loanTermEl.value || isNaN(term) || term < 1 || !Number.isInteger(term)) {
+      setError(errTerm, '请输入有效的借款期限（正整数月数）');
+      valid = false;
+    }
+    if (!paymentEl.value || isNaN(payment) || payment <= 0) {
+      setError(errPayment, '请输入大于0的还款金额');
+      valid = false;
+    } else {
+      // 校验总还款是否覆盖本金（区分还款方式）
+      var method = document.querySelector('input[name="method"]:checked').value;
+      var totalRepay = method === 'interest-first'
+        ? payment * term + amount   // 先息后本：末期还本，总还款=利息合计+本金
+        : payment * term;           // 等额本息：每期还款×期数
+      if (term > 0 && amount > 0 && totalRepay < amount) {
+        setError(errPayment, '总还款金额小于借款金额，请检查输入');
+        valid = false;
+      }
+    }
+    return valid;
+  }
+
+  // --- IRR calculation (Newton-Raphson) ---
+  function calcIRR(loanAmount, payments) {
+    // payments: array of per-period cash inflows (positive values)
+    // Returns monthly IRR (decimal), e.g. 0.01 = 1% monthly
+    if (loanAmount <= 0 || payments.length === 0) return NaN;
+    let r = 0.01; // initial guess: 1% monthly
+    const maxIter = 2000;
+    const tol = 1e-12;
+
+    for (let iter = 0; iter < maxIter; iter++) {
+      let f = loanAmount;
+      let fPrime = 0;
+      for (let t = 0; t < payments.length; t++) {
+        const period = t + 1;
+        const denom = Math.pow(1 + r, period);
+        f -= payments[t] / denom;
+        fPrime += period * payments[t] / Math.pow(1 + r, period + 1);
+      }
+      if (Math.abs(f) < tol) break;
+      if (fPrime === 0) break;
+      const rNew = r - f / fPrime;
+      if (rNew <= 0) {
+        r = r / 2;
+      } else {
+        r = rNew;
+      }
+      if (r > 1) r = 0.5; // sanity: cap at 100% monthly
+    }
+    return r;
+  }
+
+  // --- Amortization schedule ---
+  function calcSchedule(loanAmount, monthlyRate, payment, term, method) {
+    const rows = [];
+    let balance = loanAmount;
+    const pmt = payment;
+
+    if (method === 'equal') {
+      for (let i = 0; i < term; i++) {
+        const interest = balance * monthlyRate;
+        let principal = pmt - interest;
+        if (i === term - 1) {
+          // Last period: adjust for rounding
+          principal = balance;
+        }
+        balance -= principal;
+        if (balance < 0.001) balance = 0;
+        rows.push({
+          period: i + 1,
+          payment: pmt,
+          principal: principal,
+          interest: interest,
+          remaining: balance
+        });
+      }
+    } else {
+      // 先息后本
+      for (let i = 0; i < term; i++) {
+        if (i < term - 1) {
+          rows.push({
+            period: i + 1,
+            payment: pmt,
+            principal: 0,
+            interest: pmt,
+            remaining: loanAmount
+          });
+        } else {
+          rows.push({
+            period: i + 1,
+            payment: pmt + loanAmount,
+            principal: loanAmount,
+            interest: pmt,
+            remaining: 0
+          });
+        }
+      }
+    }
+    return rows;
+  }
+
+  // --- Format helpers ---
+  function fmtMoney(v) {
+    if (v === null || v === undefined || isNaN(v)) return '--';
+    return '¥' + v.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtPercent(v, decimals) {
+    if (v === null || v === undefined || isNaN(v)) return '--';
+    return (v * 100).toFixed(decimals || 2) + '%';
+  }
+
+  // --- Main calculation ---
+  function calculate() {
+    if (!validate()) return;
+
+    const amount = parseFloat(loanAmountEl.value);
+    const term   = parseInt(loanTermEl.value, 10);
+    const payment = parseFloat(paymentEl.value);
+    const method = document.querySelector('input[name="method"]:checked').value;
+
+    // Build cash flow array
+    let payments = [];
+    if (method === 'equal') {
+      for (let i = 0; i < term; i++) payments.push(payment);
+    } else {
+      for (let i = 0; i < term - 1; i++) payments.push(payment);
+      payments.push(payment + amount); // last period: interest + principal
+    }
+
+    // Calculate IRR
+    const monthlyIRR = calcIRR(amount, payments);
+    if (isNaN(monthlyIRR) || monthlyIRR < 0) {
+      showToast('计算失败，请检查输入参数');
+      return;
+    }
+    const annualIRR = monthlyIRR * 12;
+
+    // Calculate totals
+    let totalRepayment, totalInterest;
+    if (method === 'equal') {
+      totalRepayment = payment * term;
+    } else {
+      totalRepayment = payment * (term - 1) + (payment + amount);
+    }
+    totalInterest = totalRepayment - amount;
+    const interestRatio = amount > 0 ? totalInterest / amount : 0;
+
+    // Nominal rate (simple interest annualized)
+    let nominalAnnual;
+    if (method === 'interest-first') {
+      nominalAnnual = (payment / amount) * 12;
+    } else {
+      // 等额本息: simple interest rate = total_interest / principal / (term/12)
+      nominalAnnual = (totalInterest / amount) / (term / 12);
+    }
+
+    // Amortization schedule
+    const schedule = calcSchedule(amount, monthlyIRR, payment, term, method);
+
+    // Store result
+    lastResult = {
+      annualIRR, totalRepayment, totalInterest, interestRatio,
+      nominalAnnual, method, amount, term, payment, schedule
+    };
+
+    // --- Render ---
+    renderResult(lastResult);
+    renderSchedule(schedule);
+    resultCard.classList.remove('hidden');
+    resultCard.classList.remove('result-enter');
+    // Force reflow then add animation class
+    void resultCard.offsetWidth;
+    resultCard.classList.add('result-enter');
+    scheduleCard.classList.add('hidden');
+
+    // Scroll to result
+    setTimeout(() => {
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  function renderResult(r) {
+    if (!r) return;
+
+    // IRR value
+    irrValueEl.textContent = fmtPercent(r.annualIRR, 2);
+
+    // Badge
+    const annualPct = r.annualIRR * 100;
+    irrBadgeEl.textContent = annualPct <= 24 ? '合法范围' : (annualPct <= 36 ? '偏高警告' : '超过红线');
+    irrBadgeEl.className = 'irr-badge';
+    if (annualPct <= 24) {
+      irrBadgeEl.classList.add('safe');
+    } else if (annualPct <= 36) {
+      irrBadgeEl.classList.add('warning');
+    } else {
+      irrBadgeEl.classList.add('danger');
+    }
+
+    // Summary
+    totalRepayEl.textContent = fmtMoney(r.totalRepayment);
+    totalIntEl.textContent = fmtMoney(r.totalInterest);
+    intRatioEl.textContent = fmtPercent(r.interestRatio, 2);
+
+    // Rate comparison
+    const maxRate = Math.max(r.nominalAnnual, r.annualIRR, 0.001);
+    nominalRateEl.textContent = fmtPercent(r.nominalAnnual, 2);
+    actualRateEl.textContent = fmtPercent(r.annualIRR, 2);
+    nominalFillEl.style.width = (r.nominalAnnual / maxRate * 100) + '%';
+    actualFillEl.style.width = (r.annualIRR / maxRate * 100) + '%';
+
+    // Legal hint
+    legalHintEl.className = 'legal-hint';
+    if (annualPct <= 24) {
+      legalHintEl.classList.add('safe');
+      legalHintEl.innerHTML = '你的年化利率为 <strong>' + fmtPercent(r.annualIRR, 2) + '</strong>，在持牌机构借款法定保护上限（24%）以内，属于合法范围。';
+    } else if (annualPct <= 36) {
+      legalHintEl.classList.add('warning');
+      legalHintEl.innerHTML = '你的年化利率为 <strong>' + fmtPercent(r.annualIRR, 2) + '</strong>，超过持牌机构借款法定保护上限（24%），超过部分可依法主张减免。';
+    } else {
+      legalHintEl.classList.add('danger');
+      legalHintEl.innerHTML = '你的年化利率为 <strong>' + fmtPercent(r.annualIRR, 2) + '</strong>，已超过36%红线，超过24%的部分可依法主张减免。';
+    }
+  }
+
+  function renderSchedule(schedule) {
+    if (!schedule || schedule.length === 0) return;
+    scheduleBody.innerHTML = '';
+    let totalPmt = 0, totalPrinc = 0, totalInt = 0;
+    schedule.forEach(row => {
+      totalPmt += row.payment;
+      totalPrinc += row.principal;
+      totalInt += row.interest;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.period}</td>
+        <td>${fmtMoney(row.payment)}</td>
+        <td>${fmtMoney(row.principal)}</td>
+        <td>${fmtMoney(row.interest)}</td>
+        <td>${fmtMoney(row.remaining)}</td>
+      `;
+      scheduleBody.appendChild(tr);
+    });
+    // Total row
+    const trTotal = document.createElement('tr');
+    trTotal.className = 'total';
+    trTotal.innerHTML = `
+      <td>合计</td>
+      <td>${fmtMoney(totalPmt)}</td>
+      <td>${fmtMoney(totalPrinc)}</td>
+      <td>${fmtMoney(totalInt)}</td>
+      <td>--</td>
+    `;
+    scheduleBody.appendChild(trTotal);
+  }
+
+  // --- Toggle schedule ---
+  toggleSchedBtn.addEventListener('click', function() {
+    if (scheduleCard.classList.contains('hidden')) {
+      scheduleCard.classList.remove('hidden');
+      scheduleCard.classList.remove('result-enter');
+      void scheduleCard.offsetWidth;
+      scheduleCard.classList.add('result-enter');
+      toggleSchedBtn.textContent = '\u25B2 隐藏明细';
+    } else {
+      scheduleCard.classList.add('hidden');
+      toggleSchedBtn.textContent = '\u{1F4C4} 查看还款明细';
+    }
+  });
+
+  // --- Copy results ---
+  copyBtn.addEventListener('click', function() {
+    if (!lastResult) return;
+    const r = lastResult;
+    const methodLabel = r.method === 'equal' ? '等额本息' : '先息后本';
+    const annualPct = r.annualIRR * 100;
+    let riskLabel = '合法';
+    if (annualPct > 36) riskLabel = '超过红线(36%)';
+    else if (annualPct > 24) riskLabel = '偏高(24%-36%)';
+
+    const lines = [
+      '===== 借款成本核算器结果 =====',
+      '',
+      `借款金额: ${fmtMoney(r.amount)}`,
+      `借款期限: ${r.term} 个月`,
+      `还款方式: ${methodLabel}`,
+      `每期还款: ${fmtMoney(r.payment)}`,
+      '',
+      `名义年利率: ${fmtPercent(r.nominalAnnual, 2)}`,
+      `实际年化IRR: ${fmtPercent(r.annualIRR, 2)}`,
+      `风险状态: ${riskLabel}`,
+      '',
+      `总还款金额: ${fmtMoney(r.totalRepayment)}`,
+      `总利息: ${fmtMoney(r.totalInterest)}`,
+      `利息占比: ${fmtPercent(r.interestRatio, 2)}`,
+      '',
+      '===== 还款明细 =====',
+      '期数 | 还款金额 | 本金 | 利息 | 剩余本金'
+    ];
+
+    r.schedule.forEach(row => {
+      lines.push(`${row.period} | ${fmtMoney(row.payment)} | ${fmtMoney(row.principal)} | ${fmtMoney(row.interest)} | ${fmtMoney(row.remaining)}`);
+    });
+
+    lines.push('');
+    lines.push('计算结果仅供参考，不构成法律建议');
+
+    const text = lines.join('\n');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('结果已复制到剪贴板');
+      }).catch(() => {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast('结果已复制到剪贴板');
+    } catch (e) {
+      showToast('复制失败，请手动复制');
+    }
+    document.body.removeChild(ta);
+  }
+
+  // --- Share to WeChat (QR modal) ---
+  if (shareWxBtn) {
+    shareWxBtn.addEventListener('click', function() {
+      qrModal.classList.add('active');
+    });
+  }
+
+  function closeQRModal() {
+    qrModal.classList.remove('active');
+  }
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeQRModal);
+  }
+  if (qrModal) {
+    qrModal.addEventListener('click', function(e) {
+      if (e.target === qrModal) closeQRModal();
+    });
+  }
+
+  // --- Share page (copy URL) ---
+  if (sharePageBtn) {
+    sharePageBtn.addEventListener('click', function() {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showToast('页面链接已复制，快去分享吧！');
+        }).catch(function() {
+          copyUrlFallback(url);
+        });
+      } else {
+        copyUrlFallback(url);
+      }
+    });
+
+    function copyUrlFallback(url) {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('页面链接已复制，快去分享吧！');
+      } catch (e) {
+        showToast('复制失败，请手动复制链接');
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  // --- Scroll to top ---
+  if (scrollTopBtn) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 400) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    }, { passive: true });
+
+    scrollTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // --- Toast ---
+  let toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 2500);
+  }
+
+  // --- Enter key support ---
+  function onEnter(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      calculate();
+    }
+  }
+  loanAmountEl.addEventListener('keydown', onEnter);
+  loanTermEl.addEventListener('keydown', onEnter);
+  paymentEl.addEventListener('keydown', onEnter);
+
+  // --- Calc button ---
+  calcBtn.addEventListener('click', calculate);
+
+  // --- Recalc on method change ---
+  methodRadios.forEach(r => r.addEventListener('change', function() {
+    if (!resultCard.classList.contains('hidden') && lastResult) {
+      calculate();
+    }
+  }));
+
+  // --- Live validation on input ---
+  loanAmountEl.addEventListener('input', function() { clearError(errAmount); });
+  loanTermEl.addEventListener('input', function() { clearError(errTerm); });
+  paymentEl.addEventListener('input', function() { clearError(errPayment); });
+
+})();
+</script>
+</body>
+</html>

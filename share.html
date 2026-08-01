@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>借款成本核算器 - 分享页 | 信用成长手册</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --success: #10b981;
+    --bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+  .container { max-width: 640px; width: 100%; }
+  
+  /* Header */
+  .header { text-align: center; margin-bottom: 32px; }
+  .header h1 {
+    font-size: 24px; font-weight: 700;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .header p { color: var(--text-secondary); font-size: 14px; }
+  .badge {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    padding: 32px 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* Access links */
+  .access-links { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .access-link {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    word-break: break-all;
+  }
+  .access-link:hover { border-color: var(--accent); background: var(--accent-light); }
+  .access-link .tag {
+    flex-shrink: 0;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+  .access-link .tag.green { background: #ecfdf5; color: #059669; }
+  .access-link .url { flex: 1; min-width: 0; }
+  .access-link .copy-icon { flex-shrink: 0; font-size: 14px; opacity: 0.5; }
+
+  /* QR Code */
+  .qr-section { text-align: center; }
+  .qr-code {
+    width: 200px; height: 200px;
+    margin: 0 auto 16px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .qr-code img { width: 100%; height: 100%; display: block; }
+  .qr-hint { font-size: 13px; color: var(--text-secondary); }
+
+  /* URL */
+  .url-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 16px 0 8px;
+    word-break: break-all;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+  .url-box .url-text { flex: 1; min-width: 0; }
+  .copy-btn {
+    flex-shrink: 0;
+    background: var(--accent);
+    color: #fff;
+    border: none; border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { background: var(--accent-hover, #4338ca); }
+  .copy-btn.copied { background: var(--success); }
+
+  /* Share Platforms */
+  .platforms { display: flex; flex-direction: column; gap: 12px; }
+  .platform-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .platform-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .platform-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .platform-info { flex: 1; min-width: 0; }
+  .platform-name { font-size: 14px; font-weight: 600; }
+  .platform-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .platform-arrow { color: var(--text-secondary); font-size: 18px; }
+
+  /* Copy Text */
+  .copy-text-box {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-top: 12px;
+  }
+  .copy-text-box .copy-btn-small {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none; border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px; cursor: pointer;
+  }
+  .copy-text-box .copy-btn-small.copied { background: var(--success); }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--text-secondary); }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #1e293b; color: #fff;
+    padding: 10px 24px; border-radius: 10px;
+    font-size: 14px;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 480px) {
+    .card { padding: 24px 16px; }
+    .qr-code { width: 160px; height: 160px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">🆓 免费工具 · 无需注册</div>
+    <h1>借款成本核算器</h1>
+    <p>8月1日新规已实施 · 输入金额一键算出真实年化利率</p>
+  </div>
+
+  <!-- 二维码卡片 -->
+  <div class="card qr-section">
+    <div class="card-title">📱 手机扫码或打开链接</div>
+    <div class="qr-code">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fcredit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com%2Firr-calculator.html%3Fv%3D20260801b&bgcolor=ffffff&color=4f46e5&margin=10"
+           alt="QR Code"
+           onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;background:#f1f5f9;color:#64748b;font-size:14px\'>二维码加载失败<br>请使用下方链接</div>'">
+    </div>
+    <p class="qr-hint">微信 / 浏览器扫码即可使用</p>
+
+    <div class="access-links">
+      <a class="access-link" href="https://credit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com/irr-calculator.html?v=20260801b" target="_blank" id="link1">
+        <span class="tag">主链接</span>
+        <span class="url">cos.ap-guangzhou.myqcloud.com</span>
+        <span class="copy-icon">📋</span>
+      </a>
+      <a class="access-link" href="https://credit-growth-manual-1459890570.cos.accelerate.myqcloud.com/irr-calculator.html?v=20260801b" target="_blank" id="link2">
+        <span class="tag green">加速</span>
+        <span class="url">cos.accelerate.myqcloud.com</span>
+        <span class="copy-icon">📋</span>
+      </a>
+    </div>
+    <div class="url-box">
+      <span class="url-text" id="urlDisplay">https://credit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com/irr-calculator.html?v=20260801b</span>
+      <button class="copy-btn" onclick="copyUrl()">复制链接</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">💡 如果主链接打不开，请尝试加速链接</p>
+  </div>
+
+  <!-- 分享到 -->
+  <div class="card">
+    <div class="card-title">📤 分享到</div>
+    <div class="platforms">
+      <button class="platform-btn" onclick="shareWechat()">
+        <div class="platform-icon" style="background:#07c160;color:#fff;">微</div>
+        <div class="platform-info">
+          <div class="platform-name">微信</div>
+          <div class="platform-desc">分享给好友或群聊</div>
+        </div>
+        <span class="platform-arrow">→</span>
+      </button>
+
+      <button class="platform-btn" onclick="shareWechatMoment()">
+        <div class="platform-icon" style="background:#07c160;color:#fff;">朋</div>
+        <div class="platform-info">
+          <div class="platform-name">微信朋友圈</div>
+          <div class="platform-desc">分享到朋友圈</div>
+        </div>
+        <span class="platform-arrow">→</span>
+      </button>
+
+      <button class="platform-btn" onclick="shareCopyText()">
+        <div class="platform-icon" style="background:#4f46e5;color:#fff;">📋</div>
+        <div class="platform-info">
+          <div class="platform-name">复制分享文案</div>
+          <div class="platform-desc">带链接的图文，可直接粘贴发送</div>
+        </div>
+        <span class="platform-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 分享文案 -->
+  <div class="card">
+    <div class="card-title">📝 推荐分享文案</div>
+    <div class="copy-text-box" id="shareText">
+      <button class="copy-btn-small" id="copyTextBtn" onclick="copyShareText()">复制</button>
+      🔥 借款成本核算器 — 免费算真实年化利率<br><br>
+      8月1日新规已实施，赶紧算算你的借款有没有超标👇<br><br>
+      ✅ 输入金额、期限、月供<br>
+      ✅ 一秒算出真实年化利率<br>
+      ✅ 自动对比法定上限<br>
+      ✅ 不用注册，点开即用<br><br>
+      👉 链接1：https://credit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com/irr-calculator.html?v=20260801b<br>
+      👉 链接2：https://credit-growth-manual-1459890570.cos.accelerate.myqcloud.com/irr-calculator.html?v=20260801b
+    </div>
+  </div>
+
+  <!-- 使用说明 -->
+  <div class="card">
+    <div class="card-title">📖 使用说明</div>
+    <div style="font-size:14px;color:var(--text-secondary);line-height:1.8;">
+      <p><strong>1.</strong> 打开链接进入计算器</p>
+      <p><strong>2.</strong> 输入借款金额（元）</p>
+      <p><strong>3.</strong> 选择借款期限（月）</p>
+      <p><strong>4.</strong> 输入每月还款金额</p>
+      <p><strong>5.</strong> 点击"计算"即可得到真实年化利率</p>
+      <p style="margin-top:12px;padding:12px;background:var(--accent-light);border-radius:8px;color:var(--accent);">
+        💡 超过法定利率上限的部分，可依法主张减免
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://credit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com/irr-calculator.html?v=20260801b" target="_blank">打开借款成本核算器</a>
+    · <a href="https://credit-growth-manual-1459890570.cos.accelerate.myqcloud.com/irr-calculator.html?v=20260801b" target="_blank">加速通道</a>
+    · 信用成长手册
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOOL_URL = 'https://credit-growth-manual-1459890570.cos.ap-guangzhou.myqcloud.com/irr-calculator.html?v=20260801b';
+const TOOL_URL2 = 'https://credit-growth-manual-1459890570.cos.accelerate.myqcloud.com/irr-calculator.html?v=20260801b';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function copyUrl() {
+  navigator.clipboard.writeText(TOOL_URL).then(() => {
+    showToast('链接已复制');
+    document.querySelector('.copy-btn').textContent = '已复制';
+    setTimeout(() => document.querySelector('.copy-btn').textContent = '复制链接', 2000);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = TOOL_URL; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('链接已复制');
+  });
+}
+
+function copyShareText() {
+  const text = document.getElementById('shareText').innerText.replace('复制', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('文案已复制，可直接粘贴发送');
+    const btn = document.getElementById('copyTextBtn');
+    btn.textContent = '已复制';
+    setTimeout(() => btn.textContent = '复制', 2000);
+  });
+}
+
+// 点击链接复制
+document.getElementById('link1').addEventListener('click', function(e) {
+  e.preventDefault();
+  navigator.clipboard.writeText(TOOL_URL).then(() => {
+    showToast('主链接已复制');
+  });
+});
+document.getElementById('link2').addEventListener('click', function(e) {
+  e.preventDefault();
+  navigator.clipboard.writeText(TOOL_URL2).then(() => {
+    showToast('加速链接已复制');
+  });
+});
+
+function shareWechat() {
+  copyUrl();
+  showToast('链接已复制，打开微信粘贴发送给好友');
+}
+
+function shareWechatMoment() {
+  copyUrl();
+  showToast('链接已复制，打开微信粘贴到朋友圈');
+}
+
+function shareCopyText() {
+  copyShareText();
+}
+</script>
+</body>
+</html>
